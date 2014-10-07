@@ -81,16 +81,19 @@ namespace NUnitReporter
                 Reporter.SetProperty(ReporterHelperProperties.TestDuration, Math.Round(result.Time).ToString(CultureInfo.InvariantCulture));
 
                 TestStatus status;
-                if (result.IsError)
+                // if internal exception or assertion exception
+                if (result.IsError || result.IsFailure)
                 {
                     status = TestStatus.Failed;
                     Reporter.Log(MessageTypes.Failed, result.Message ?? "Test failed!");
                     Reporter.Log(InternalMessageTypes.StackTrace, result.StackTrace);
                 }
+                // if success
                 else if (result.IsSuccess)
                 {
                     status = TestStatus.Passed;
                 }
+                // neither exception nor success - test case was skipped
                 else
                 {
                     status = TestStatus.Skipped;
