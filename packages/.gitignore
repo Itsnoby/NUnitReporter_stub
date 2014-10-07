@@ -1,0 +1,3 @@
+# Do not commit packages, they should be restored using NuGet Restore feature
+*/*
+!repositories.config

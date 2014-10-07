@@ -1,0 +1,7 @@
+# Ignore for all solution
+.localhistory
+.reports
+*.DotSettings.user
+*.suo
+[Bb]in
+[Oo]bj
