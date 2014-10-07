@@ -1,4 +1,6 @@
-﻿using System;
+﻿#region Usages
+
+using System;
 using System.Globalization;
 using System.IO;
 using NUnit.Core;
@@ -7,13 +9,14 @@ using NUnit.Framework;
 using NUnitReporter.Reporting;
 using NUnitReporter.Reporting.Helpers;
 
+#endregion
 
 namespace NUnitReporter
 {
     /// <summary>
     /// A connector for NUnit as add-in.
     /// </summary>
-    [NUnitAddinAttribute(Type = ExtensionType.Core, Name = "NUnit Reporter", Description = "Add-in for reports generation")]
+    [NUnitAddin(Type = ExtensionType.Core, Name = "NUnit Reporter", Description = "Add-in for reports generation")]
     public class Listener : IAddin, EventListener
     {
         public bool Install(IExtensionHost host)

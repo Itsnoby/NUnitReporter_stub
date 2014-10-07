@@ -1,4 +1,6 @@
-﻿using System;
+﻿#region Usages
+
+using System;
 using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.IO;
@@ -9,6 +11,8 @@ using NVelocity;
 using NVelocity.App;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
+
+#endregion
 
 namespace NUnitReporter.Reporting.Helpers
 {

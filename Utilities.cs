@@ -1,6 +1,10 @@
-﻿using System;
+﻿#region Usages
+
+using System;
 using System.IO;
 using System.Reflection;
+
+#endregion
 
 namespace NUnitReporter
 {

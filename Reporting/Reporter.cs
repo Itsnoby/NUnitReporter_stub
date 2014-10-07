@@ -1,9 +1,13 @@
-﻿using System;
+﻿#region Usages
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using OpenQA.Selenium.Remote;
 using NUnitReporter.Reporting.Helpers;
+using OpenQA.Selenium.Remote;
+
+#endregion
 
 namespace NUnitReporter.Reporting
 {

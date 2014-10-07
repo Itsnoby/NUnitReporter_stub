@@ -1,6 +1,9 @@
-﻿using System;
-using System.Diagnostics;
+﻿#region Usages
+
+using System;
 using System.Text;
+
+#endregion
 
 namespace NUnitReporter.Reporting.Helpers
 {

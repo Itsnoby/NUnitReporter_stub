@@ -1,5 +1,9 @@
 ﻿
+#region Usages
+
 using OpenQA.Selenium.Remote;
+
+#endregion
 
 namespace NUnitReporter.Reporting.Helpers
 {
