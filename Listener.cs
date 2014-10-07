@@ -29,7 +29,6 @@ namespace NUnitReporter
         #region EventListener Members
         public void RunStarted(string name, int testCount)
         {
-            Console.WriteLine("Home directory: {0}", Utilities.GetProjectDirectory());
             try
             {
                 Reporter.AddReporter(new ConsoleReporterHelper());
