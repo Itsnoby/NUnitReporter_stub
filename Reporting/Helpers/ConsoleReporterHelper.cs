@@ -19,7 +19,7 @@ namespace NUnitReporter.Reporting.Helpers
             switch (name)
             {
                 case ReporterHelperProperties.TestName:
-                    Log(string.Format("[*****] Test started: '{0}'.", value));
+                    Log(string.Format("[*****] Finished test: '{0}'.", value));
                     break;
                 case ReporterHelperProperties.TestDuration:
                     Log(string.Format("[*****] Test executed in {0} seconds.", value));
@@ -34,6 +34,9 @@ namespace NUnitReporter.Reporting.Helpers
             switch (type)
             {
                 case MessageTypes.Standard:
+                    break;
+                case MessageTypes.ActionTitle:
+                    msg.Append("\t");
                     break;
                 case MessageTypes.Skipped:
                     msg.Append("[SKIPPED] ");

@@ -77,7 +77,7 @@ namespace NUnitReporter.Reporting
         /// <summary>
         /// Pass WebDriver object for connected reporters who can use it to make screen captures.
         /// </summary>
-        /// <param name="driver">Active Selenium WebDriver instance. The driver object shout has 'takes skreenshot' capabilities enabled.</param>
+        /// <param name="driver">Active Selenium WebDriver instance. The driver object shout has 'takes screenshot' capabilities enabled.</param>
         [MethodImpl(MethodImplOptions.Synchronized)]
         public static void SetSeleniumDriver(RemoteWebDriver driver)
         {
