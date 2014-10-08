@@ -76,6 +76,7 @@ namespace NUnitReporter.Reporting
 
         /// <summary>
         /// Pass WebDriver object for connected reporters who can use it to make screen captures.
+        /// Quits WebDriver if passed driver object is <c>null</c>.
         /// </summary>
         /// <param name="driver">Active Selenium WebDriver instance. The driver object shout has 'takes screenshot' capabilities enabled.</param>
         [MethodImpl(MethodImplOptions.Synchronized)]
@@ -83,8 +84,12 @@ namespace NUnitReporter.Reporting
         {
             foreach (var helper in _reporters.OfType<ISeleniumReporter>())
             {
+                if (driver == null && helper.WebDriver != null)
+                    helper.WebDriver.Quit();
+
                 helper.WebDriver = driver;
             }
+
         }
 
         /// <summary>

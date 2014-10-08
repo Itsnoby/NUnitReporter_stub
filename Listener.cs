@@ -77,8 +77,10 @@ namespace NUnitReporter
         {
             try
             {
-                Reporter.SetProperty(ReporterHelperProperties.TestName, string.IsNullOrEmpty(result.Description) ? result.Name : result.Description);
-                Reporter.SetProperty(ReporterHelperProperties.TestDuration, Math.Round(result.Time).ToString(CultureInfo.InvariantCulture));
+                Reporter.SetProperty(ReporterHelperProperties.TestName,
+                    string.IsNullOrEmpty(result.Description) ? result.Name : result.Description);
+                Reporter.SetProperty(ReporterHelperProperties.TestDuration,
+                    Math.Round(result.Time).ToString(CultureInfo.InvariantCulture));
 
                 TestStatus status;
                 // if internal exception or assertion exception
@@ -88,12 +90,12 @@ namespace NUnitReporter
                     Reporter.Log(MessageTypes.Failed, result.Message ?? "Test failed!");
                     Reporter.Log(InternalMessageTypes.StackTrace, result.StackTrace);
                 }
-                // if success
+                    // if success
                 else if (result.IsSuccess)
                 {
                     status = TestStatus.Passed;
                 }
-                // neither exception nor success - test case was skipped
+                    // neither exception nor success - test case was skipped
                 else
                 {
                     status = TestStatus.Skipped;
@@ -107,6 +109,10 @@ namespace NUnitReporter
             catch (Exception e)
             {
                 WarnAboutException(e);
+            }
+            finally
+            {
+                Reporter.SetSeleniumDriver(null);
             }
         }
 
