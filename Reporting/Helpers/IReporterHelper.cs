@@ -21,6 +21,7 @@ namespace NUnitReporter.Reporting.Helpers
         TestName,
         TestDuration,
         TestStatus,
+        SuiteName,
         WorkingDirectory
     }
 }

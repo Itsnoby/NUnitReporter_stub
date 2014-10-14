@@ -42,7 +42,8 @@ namespace NUnitReporter.Reporting.Helpers
             var reportPath = _properties.GetString(ReporterHelperProperties.WorkingDirectory.ToString(), Utilities.GetProjectDirectory());
             if (!Directory.Exists(reportPath))
                 Directory.CreateDirectory(reportPath);
-            var filename = Path.Combine(reportPath, string.Format("TestResult_{0:dd-MMMM-yyyy_HH-mm-ss-fff}.html", DateTime.Now));
+            var filename = Path.Combine(reportPath, string.Format("{0}_{1:dd-MMMM-yyyy_HH-mm-ss-fff}.html",
+                _properties.GetString(ReporterHelperProperties.SuiteName.ToString(), "TestResult"), DateTime.Now));
 
             _writer = _writer = new StreamWriter(filename, false, new UnicodeEncoding());
 

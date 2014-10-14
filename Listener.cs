@@ -118,12 +118,11 @@ namespace NUnitReporter
 
         public void SuiteStarted(TestName testName)
         {
-//            Console.WriteLine("Suite name: {0} || {1} || {2}", testName.Name, testName.FullName, testName.UniqueName);
+            Reporter.SetProperty(ReporterHelperProperties.SuiteName, testName.Name);
         }
 
         public void SuiteFinished(TestResult result)
         {
-
         }
 
         public void UnhandledException(Exception exception)
@@ -139,7 +138,6 @@ namespace NUnitReporter
 
         private static void WarnAboutException(Exception e)
         {
-
             Console.WriteLine(e);
         }
     }
