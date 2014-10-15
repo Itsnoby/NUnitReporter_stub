@@ -37,13 +37,18 @@ namespace NUnitReporter.Reporting.Helpers
         }
 
 
-        public void Init()
+        public void SuiteLogInit()
+        {
+            // TODO
+        }
+
+        public void TestLogInit()
         {
             var reportPath = _properties.GetString(ReporterHelperProperties.WorkingDirectory.ToString(), Utilities.GetProjectDirectory());
             if (!Directory.Exists(reportPath))
                 Directory.CreateDirectory(reportPath);
             var filename = Path.Combine(reportPath, string.Format("{0}_{1:dd-MMMM-yyyy_HH-mm-ss-fff}.html",
-                _properties.GetString(ReporterHelperProperties.SuiteName.ToString(), "TestResult"), DateTime.Now));
+                _properties.GetString(ReporterHelperProperties.TestSuiteName.ToString(), "TestResult"), DateTime.Now));
 
             _writer = _writer = new StreamWriter(filename, false, new UnicodeEncoding());
 
@@ -92,7 +97,7 @@ namespace NUnitReporter.Reporting.Helpers
             _log.Clear();
         }
 
-        public void Finish()
+        public void TestLogFinish()
         {
             if (_writer == null) return;
 
@@ -111,6 +116,11 @@ namespace NUnitReporter.Reporting.Helpers
             _properties.Remove(ReporterHelperProperties.TestName.ToString());
             _properties.Remove(ReporterHelperProperties.TestStatus.ToString());
             _properties.Remove(ReporterHelperProperties.TestDuration.ToString());
+        }
+
+        public void SuiteLogFinish()
+        {
+            // TODO
         }
 
         private string MakeDriverScreenshot(string imagePath)

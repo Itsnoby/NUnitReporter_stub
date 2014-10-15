@@ -12,7 +12,9 @@ namespace NUnitReporter.Reporting.Helpers
     /// </summary>
     public class ConsoleReporterHelper : IReporterHelper
     {
-        public void Init() { }
+        public void SuiteLogInit(){ }
+
+        public void TestLogInit() { }
 
         public void AddProperty(ReporterHelperProperties name, string value)
         {
@@ -58,6 +60,7 @@ namespace NUnitReporter.Reporting.Helpers
 
         public void ClearLog() { }
 
-        public void Finish() { }
+        public void TestLogFinish() { }
+        public void SuiteLogFinish() { }
     }
 }

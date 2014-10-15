@@ -22,7 +22,37 @@ namespace NUnitReporter.Reporting
             get { return _reporters; }
         }
 
-        private static bool _initializedBeforeTest;
+        private static bool _testReportingInitializedBefore, _suiteReportingInitializedBefore;
+
+        /// <summary>
+        /// Notify all connected reporters about suite execution. The method can be used once, the second method call does nothing.
+        /// To notify reporter helpers again <see cref="Reporter.FinishSuiteReporting"/> method should be executed before.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public static void InitSuiteReporting()
+        {
+            if (_suiteReportingInitializedBefore)
+                return;
+
+            // TODO
+
+            _suiteReportingInitializedBefore = true;
+        }
+
+        /// <summary>
+        /// Notify all connected reporters that suite execution is finished. The method can be used once, the second method call does nothing.
+        /// To notify reporter helpers again <see cref="Reporter.InitSuiteReporting"/> method should be executed before.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public static void FinishSuiteReporting()
+        {
+            if (!_suiteReportingInitializedBefore)
+                return;
+
+            // TODO
+
+            _suiteReportingInitializedBefore = false;
+        }
 
         /// <summary>
         /// Initialize all connected reporters before each test execution. The method can be used once, the second method call does nothing.
@@ -31,15 +61,15 @@ namespace NUnitReporter.Reporting
         [MethodImpl(MethodImplOptions.Synchronized)]
         public static void InitTestReporting()
         {
-            if (_initializedBeforeTest)
+            if (_testReportingInitializedBefore)
                 return;
 
             foreach (var reporterHelper in _reporters)
             {
-                reporterHelper.Init();
+                reporterHelper.TestLogInit();
             }
 
-            _initializedBeforeTest = true;
+            _testReportingInitializedBefore = true;
         }
 
         /// <summary>
@@ -49,15 +79,15 @@ namespace NUnitReporter.Reporting
         [MethodImpl(MethodImplOptions.Synchronized)]
         public static void FinishTestReporting()
         {
-            if (!_initializedBeforeTest)
+            if (!_testReportingInitializedBefore)
                 return;
 
             foreach (var reporterHelper in _reporters)
             {
-                reporterHelper.Finish();
+                reporterHelper.TestLogFinish();
             }
 
-            _initializedBeforeTest = false;
+            _testReportingInitializedBefore = false;
         }
 
         /// <summary>
@@ -152,7 +182,7 @@ namespace NUnitReporter.Reporting
             }
             _reporters.Clear();
 
-            _initializedBeforeTest = false;
+            _testReportingInitializedBefore = false;
         }
     }
 }

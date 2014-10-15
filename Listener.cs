@@ -38,6 +38,9 @@ namespace NUnitReporter
                 Reporter.AddReporter(new HtmlReporterHelper());
 
                 Reporter.SetProperty(ReporterHelperProperties.WorkingDirectory, Path.Combine(Path.Combine(Utilities.GetProjectDirectory(), ".reports"), "html"));
+                Reporter.SetProperty(ReporterHelperProperties.SuiteName, "Suite Execution Results");
+
+                Reporter.InitSuiteReporting();
             }
             catch (Exception e)
             {
@@ -49,6 +52,7 @@ namespace NUnitReporter
         {
             try
             {
+                Reporter.FinishSuiteReporting();
                 Reporter.RemoveReporters();
             }
             catch (Exception e)
@@ -118,7 +122,7 @@ namespace NUnitReporter
 
         public void SuiteStarted(TestName testName)
         {
-            Reporter.SetProperty(ReporterHelperProperties.SuiteName, testName.Name);
+            Reporter.SetProperty(ReporterHelperProperties.TestSuiteName, testName.Name);
         }
 
         public void SuiteFinished(TestResult result)

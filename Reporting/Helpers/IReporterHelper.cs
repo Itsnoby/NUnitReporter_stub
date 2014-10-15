@@ -3,7 +3,9 @@ namespace NUnitReporter.Reporting.Helpers
 {
     public interface IReporterHelper
     {
-        void Init();
+        void SuiteLogInit();
+
+        void TestLogInit();
 
         void AddProperty(ReporterHelperProperties name, string value);
 
@@ -13,7 +15,9 @@ namespace NUnitReporter.Reporting.Helpers
 
         void ClearLog();
 
-        void Finish();
+        void TestLogFinish();
+
+        void SuiteLogFinish();
     }
 
     public enum ReporterHelperProperties
@@ -21,6 +25,7 @@ namespace NUnitReporter.Reporting.Helpers
         TestName,
         TestDuration,
         TestStatus,
+        TestSuiteName,
         SuiteName,
         WorkingDirectory
     }

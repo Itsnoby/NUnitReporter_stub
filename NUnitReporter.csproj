@@ -73,6 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Reporting\Templates\suite_suite.html.vm" />
     <None Include="Reporting\Templates\test_result.html.vm" />
   </ItemGroup>
   <ItemGroup>
