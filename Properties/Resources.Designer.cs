@@ -63,6 +63,16 @@ namespace NUnitReporter.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] suite_result_html {
+            get {
+                object obj = ResourceManager.GetObject("suite_result_html", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] test_result_html {
             get {
                 object obj = ResourceManager.GetObject("test_result_html", resourceCulture);

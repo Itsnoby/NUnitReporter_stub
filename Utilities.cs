@@ -10,7 +10,7 @@ namespace NUnitReporter
 {
     class Utilities
     {
-        static public string GetProjectDirectory()
+        static public string GetAssemblyDirectory()
         {
             var codeBase = Assembly.GetExecutingAssembly().CodeBase;
             var uri = new UriBuilder(codeBase);

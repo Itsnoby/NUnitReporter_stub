@@ -37,8 +37,8 @@ namespace NUnitReporter
                 Reporter.AddReporter(new ConsoleReporterHelper());
                 Reporter.AddReporter(new HtmlReporterHelper());
 
-                Reporter.SetProperty(ReporterHelperProperties.WorkingDirectory, Path.Combine(Path.Combine(Utilities.GetProjectDirectory(), ".reports"), "html"));
-                Reporter.SetProperty(ReporterHelperProperties.SuiteName, "Suite Execution Results");
+                Reporter.SetProperty(ReporterHelperProperties.WorkingDirectory, Path.Combine(Path.Combine(Utilities.GetAssemblyDirectory(), ".reports"), "html"));
+                Reporter.SetProperty(ReporterHelperProperties.SuiteName, "Suite Execution Results"); // TODO need somehow get suite name
 
                 Reporter.InitSuiteReporting();
             }

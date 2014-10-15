@@ -21,17 +21,47 @@ namespace NUnitReporter.Reporting.Helpers
     /// </summary>
     public class HtmlReporterHelper : IReporterHelperExtended, ISeleniumReporter
     {
-        private VelocityContext _context;
+        private VelocityContext _testContext, _suiteContext;
         private ExtendedProperties _properties;
-        private TextWriter _writer;
+        private TextWriter _testWriter, _suiteWriter;
 
         private List<HtmlReporterHelperMessage> _log;
 
+        private SuiteResults _suiteResults;
+        private TestResults _currentTestResults;
+
         public RemoteWebDriver WebDriver { get; set; }
+
+        private const string TestsResultsDir = "tests";
+        private const string ResDir = "res";
+
+        private string GetWorkPath()
+        {
+            var workPath = _properties.GetString(ReporterHelperProperties.WorkingDirectory.ToString(), Utilities.GetAssemblyDirectory());
+            if (!Directory.Exists(workPath))
+                Directory.CreateDirectory(workPath);
+            return workPath;
+        }
+
+        private string GetTestsFilesPath()
+        {
+            var path = Path.Combine(GetWorkPath(), TestsResultsDir);
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+            return path;
+        }
+
+        private string GetResFilesPath()
+        {
+            var path = Path.Combine(GetTestsFilesPath(), ResDir);
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+            return path;
+        }
+
 
         public HtmlReporterHelper()
         {
-            _context = new VelocityContext();
             _properties = new ExtendedProperties();
             _log = new List<HtmlReporterHelperMessage>();
         }
@@ -39,18 +69,22 @@ namespace NUnitReporter.Reporting.Helpers
 
         public void SuiteLogInit()
         {
-            // TODO
+            _suiteContext = new VelocityContext();
+            _suiteResults = new SuiteResults(_properties.GetString(ReporterHelperProperties.TestSuiteName.ToString(), "Suite Execution Results"));
+
         }
 
         public void TestLogInit()
         {
-            var reportPath = _properties.GetString(ReporterHelperProperties.WorkingDirectory.ToString(), Utilities.GetProjectDirectory());
-            if (!Directory.Exists(reportPath))
-                Directory.CreateDirectory(reportPath);
-            var filename = Path.Combine(reportPath, string.Format("{0}_{1:dd-MMMM-yyyy_HH-mm-ss-fff}.html",
-                _properties.GetString(ReporterHelperProperties.TestSuiteName.ToString(), "TestResult"), DateTime.Now));
+            _testContext = new VelocityContext();
 
-            _writer = _writer = new StreamWriter(filename, false, new UnicodeEncoding());
+            var filename = string.Format("{0}_{1:dd-MMMM-yyyy_HH-mm-ss-fff}.html",
+                _properties.GetString(ReporterHelperProperties.TestSuiteName.ToString(), "TestResult"), DateTime.Now);
+            var filePath = Path.Combine(GetTestsFilesPath(), filename);
+
+            _currentTestResults = new TestResults(string.Format("{0}/{1}", TestsResultsDir, filename));
+
+            _testWriter = new StreamWriter(filePath, false, new UnicodeEncoding());
 
             Velocity.Init();
         }
@@ -73,12 +107,9 @@ namespace NUnitReporter.Reporting.Helpers
             _log.Add(new HtmlReporterHelperMessage(type, message.Replace(Environment.NewLine, "<br>")));
             if (type.Equals(MessageTypes.Failed))
             {
-                var imagePath = Path.Combine(_properties.GetString(ReporterHelperProperties.WorkingDirectory.ToString(), Utilities.GetProjectDirectory()), "images");
-                if (!Directory.Exists(imagePath))
-                    Directory.CreateDirectory(imagePath);
-                var image = MakeDriverScreenshot(imagePath);
+                var image = MakeDriverScreenshot(GetResFilesPath());
                 if (image != null)
-                    Log(InternalMessageTypes.Image, string.Format("images/{0}", image));
+                    Log(InternalMessageTypes.Image, string.Format("{0}/{1}", ResDir, image));
             }                
         }
 
@@ -99,20 +130,20 @@ namespace NUnitReporter.Reporting.Helpers
 
         public void TestLogFinish()
         {
-            if (_writer == null) return;
+            _currentTestResults.Name = _properties.GetString(ReporterHelperProperties.TestName.ToString(), "Automated Test Case");
+            _currentTestResults.Status = _properties.GetString(ReporterHelperProperties.TestStatus.ToString(), TestStatus.Passed.ToString());
+            _currentTestResults.Duration = Convert.ToInt32(_properties.GetString(ReporterHelperProperties.TestDuration.ToString(), "0"));
+            _suiteResults.AddResult(_currentTestResults);
 
-            _context.Put("log", _log);
-            _context.Put("name", _properties.GetString(ReporterHelperProperties.TestName.ToString(), "Automated Test Case"));
-            _context.Put("status", _properties.GetString(ReporterHelperProperties.TestStatus.ToString(), TestStatus.Passed.ToString()));
-            _context.Put("duration",  _properties.GetString(ReporterHelperProperties.TestDuration.ToString(), "0"));
-
-            var template = Encoding.UTF8.GetString(Properties.Resources.test_result_html);
-            Velocity.Evaluate(_context, _writer, "test_result_html", template);
-            _writer.Dispose();
+            _testContext.Put("log", _log);
+            _testContext.Put("name", _currentTestResults.Name);
+            _testContext.Put("status", _currentTestResults.Status);
+            _testContext.Put("duration", _currentTestResults.Duration);
+            MergeTemplate(_testWriter, Properties.Resources.test_result_html, _testContext);
 
             // Restore reporter state
             _log.Clear();
-            _writer = null;
+            _testWriter = null;
             _properties.Remove(ReporterHelperProperties.TestName.ToString());
             _properties.Remove(ReporterHelperProperties.TestStatus.ToString());
             _properties.Remove(ReporterHelperProperties.TestDuration.ToString());
@@ -120,7 +151,14 @@ namespace NUnitReporter.Reporting.Helpers
 
         public void SuiteLogFinish()
         {
-            // TODO
+            var filename = string.Format("SuiteResults_{0:dd-MMMM-yyyy_HH-mm-ss-fff}.html",DateTime.Now);
+            _suiteWriter = new StreamWriter(Path.Combine(GetWorkPath(), filename), false, new UnicodeEncoding());
+
+            _suiteContext.Put("results", _suiteResults);
+            MergeTemplate(_suiteWriter, Properties.Resources.suite_result_html, _suiteContext);
+
+            _suiteWriter = null;
+            _suiteResults = null;
         }
 
         private string MakeDriverScreenshot(string imagePath)
@@ -133,7 +171,17 @@ namespace NUnitReporter.Reporting.Helpers
             screenshot.SaveAsFile(Path.Combine(imagePath, imageName), ImageFormat.Png);
             return imageName;
         }
+
+        private void MergeTemplate(TextWriter writer, byte[] templateResource, VelocityContext context)
+        {
+            if (writer == null) return;
+            var template = Encoding.UTF8.GetString(templateResource);
+            Velocity.Evaluate(context, writer, "htmlTemplate", template);
+            writer.Dispose();
+        }
     }
+
+
 
     public class HtmlReporterHelperMessage
     {
@@ -151,6 +199,41 @@ namespace NUnitReporter.Reporting.Helpers
             Time = DateTime.Now;
             Type = type.ToString();
             Message = message;
+        }
+    }
+
+    public class TestResults
+    {
+        public string Name { get; set; }
+        public string Status { get; set; }
+        public int Duration { get; set; }
+
+        public string FileLink { get; set; }
+
+        public TestResults(string fileLink)
+        {
+            FileLink = fileLink;
+        }
+    }
+
+    public class SuiteResults
+    {
+        public string Name { get; private set; }
+
+        public SuiteResults(string name)
+        {
+            Name = name;
+        }
+
+        private List<TestResults> _results = new List<TestResults>();
+        public List<TestResults> Results
+        {
+            get { return _results; }
+        }
+
+        public void AddResult(TestResults result)
+        {
+            _results.Add(result);
         }
     }
 }

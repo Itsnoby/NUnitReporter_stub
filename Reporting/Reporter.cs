@@ -34,7 +34,10 @@ namespace NUnitReporter.Reporting
             if (_suiteReportingInitializedBefore)
                 return;
 
-            // TODO
+            foreach (var reporterHelper in _reporters)
+            {
+                reporterHelper.SuiteLogInit();
+            }
 
             _suiteReportingInitializedBefore = true;
         }
@@ -49,7 +52,10 @@ namespace NUnitReporter.Reporting
             if (!_suiteReportingInitializedBefore)
                 return;
 
-            // TODO
+            foreach (var reporterHelper in _reporters)
+            {
+                reporterHelper.SuiteLogFinish();
+            }
 
             _suiteReportingInitializedBefore = false;
         }

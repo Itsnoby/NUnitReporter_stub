@@ -1,4 +1,7 @@
 ﻿
+using System.Collections.Generic;
+using NUnit.Framework;
+
 namespace NUnitReporter.Reporting.Helpers
 {
     public interface IReporterHelper
