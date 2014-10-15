@@ -154,7 +154,9 @@
 						<tr class="$messageClass">
 							<td valign="top" class="time_col">$message.GetTime</td>
 							#if ($message.Type == "Image")
-								<td><div class="image_block"><img src="$message.Message"></div></td>
+								<td><div class="image_block">
+									<a href="$message.Message" title="Click to open in full size"><img src="$message.Message"></a>
+								</div></td>
 							#else
 								<td>$message.Message</td>
 							#end
