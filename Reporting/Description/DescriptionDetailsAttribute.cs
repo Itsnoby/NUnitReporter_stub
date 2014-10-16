@@ -6,5 +6,10 @@ namespace NUnitReporter.Reporting.Description
     public class DescriptionDetailsAttribute : Attribute
     {
         public string Description { get; set; }
+
+        public DescriptionDetailsAttribute(string description)
+        {
+            Description = description;
+        }
     }
 }
