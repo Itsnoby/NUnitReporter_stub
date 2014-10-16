@@ -32,6 +32,7 @@ namespace NUnitReporter.Reporting.Helpers
 
         public RemoteWebDriver WebDriver { get; set; }
 
+        #region Directories
         private const string TestsResultsDir = "tests";
         private const string ResDir = "res";
 
@@ -57,7 +58,8 @@ namespace NUnitReporter.Reporting.Helpers
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
             return path;
-        }
+        } 
+        #endregion
 
 
         public HtmlReporterHelper()
@@ -79,7 +81,7 @@ namespace NUnitReporter.Reporting.Helpers
             _testContext = new VelocityContext();
 
             var filename = string.Format("{0}_{1:dd-MMMM-yyyy_HH-mm-ss-fff}.html",
-                _properties.GetString(ReporterHelperProperties.TestSuiteName.ToString(), "TestResult"), DateTime.Now);
+                _properties.GetString(ReporterHelperProperties.TestClassName.ToString(), "TestResult"), DateTime.Now);
             var filePath = Path.Combine(GetTestsFilesPath(), filename);
 
             _currentTestResults = new TestResults(string.Format("{0}/{1}", TestsResultsDir, filename));

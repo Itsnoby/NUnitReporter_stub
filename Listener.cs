@@ -80,10 +80,34 @@ namespace NUnitReporter
         {
             try
             {
+                #region Get test description
+
+                var testDescription = new StringBuilder();
+
+                // try to get description from the own attribute
+                var descriptionDetails = (DescriptionDetailsAttribute[])Utilities.ExtractAttribute<DescriptionDetailsAttribute>(result.Test.ClassName, result.Test.MethodName);
+                if (descriptionDetails != null && descriptionDetails.Length > 0)
+                {
+                    foreach (var description in descriptionDetails)
+                        testDescription.Append(description.Description);
+                }
+                // or get it manually from NUnit attribute
+                else
+                {
+                    var nunitDetails = (DescriptionAttribute[])Utilities.ExtractAttribute<DescriptionAttribute>(result.Test.ClassName, result.Test.MethodName);
+                    foreach (var description in nunitDetails)
+                        testDescription.Append(description.Description);
+                }
+
                 Reporter.SetProperty(ReporterHelperProperties.TestTitle,
-                    string.IsNullOrEmpty(result.Description) ? result.Name : result.Description);
+                    string.IsNullOrEmpty(testDescription.ToString()) ? result.Name : testDescription.ToString()); 
+
+                #endregion
+
                 Reporter.SetProperty(ReporterHelperProperties.TestDuration,
                     Math.Round(result.Time).ToString(CultureInfo.InvariantCulture));
+
+                #region Determine test status
 
                 TestStatus status;
                 // if internal exception or assertion exception
@@ -93,12 +117,12 @@ namespace NUnitReporter
                     Reporter.Log(MessageTypes.Failed, result.Message ?? "Test failed!");
                     Reporter.Log(InternalMessageTypes.StackTrace, result.StackTrace);
                 }
-                    // if success
+                // if success
                 else if (result.IsSuccess)
                 {
                     status = TestStatus.Passed;
                 }
-                    // neither exception nor success - test case was skipped
+                // neither exception nor success - the test was skipped
                 else
                 {
                     status = TestStatus.Skipped;
@@ -106,6 +130,8 @@ namespace NUnitReporter
                     Reporter.Log(InternalMessageTypes.StackTrace, result.StackTrace);
                 }
                 Reporter.SetProperty(ReporterHelperProperties.TestStatus, status.ToString());
+
+                #endregion
 
                 Reporter.FinishTestReporting();
             }
@@ -123,8 +149,11 @@ namespace NUnitReporter
         {
             try
             {
-                // set test case class name
-                Reporter.SetProperty(ReporterHelperProperties.TestSuiteName, testName.Name);
+                // set test class name and do not set when it is parametrized test method (we need class name but not method name)
+                if (Utilities.IsClassExists(testName.FullName))
+                {
+                    Reporter.SetProperty(ReporterHelperProperties.TestClassName, testName.Name);
+                }
 
                 // get suite description attribute
                 var descriptionDetails =(DescriptionDetailsAttribute[]) Utilities.ExtractAttribute<DescriptionDetailsAttribute>(testName.FullName);
@@ -138,7 +167,6 @@ namespace NUnitReporter
                     Reporter.SetProperty(ReporterHelperProperties.SuiteTitle, fullDescription.ToString());
                 }
 
-                // and initialize suite reporting
                 Reporter.InitSuiteReporting();
             }
             catch (Exception e)
