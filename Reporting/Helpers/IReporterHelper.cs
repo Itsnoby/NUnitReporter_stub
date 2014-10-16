@@ -25,11 +25,11 @@ namespace NUnitReporter.Reporting.Helpers
 
     public enum ReporterHelperProperties
     {
-        TestName,
+        TestTitle,
         TestDuration,
         TestStatus,
         TestSuiteName,
-        SuiteName,
+        SuiteTitle,
         WorkingDirectory
     }
 }

@@ -48,7 +48,6 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="WebDriver, Version=2.43.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\Selenium.WebDriver.2.43.1\lib\net35\WebDriver.dll</HintPath>
@@ -62,6 +61,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Reporting\Description\DescriptionDetailsAttribute.cs" />
     <Compile Include="Reporting\Helpers\ConsoleReporterHelper.cs" />
     <Compile Include="Reporting\Helpers\HtmlReporterHelper.cs" />
     <Compile Include="Reporting\Helpers\ISeleniumReporter.cs" />

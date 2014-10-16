@@ -20,7 +20,7 @@ namespace NUnitReporter.Reporting.Helpers
         {
             switch (name)
             {
-                case ReporterHelperProperties.TestName:
+                case ReporterHelperProperties.TestTitle:
                     Log(string.Format("[*****] Finished test: '{0}'.", value));
                     break;
                 case ReporterHelperProperties.TestDuration:

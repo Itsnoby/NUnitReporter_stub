@@ -70,7 +70,7 @@ namespace NUnitReporter.Reporting.Helpers
         public void SuiteLogInit()
         {
             _suiteContext = new VelocityContext();
-            _suiteResults = new SuiteResults(_properties.GetString(ReporterHelperProperties.TestSuiteName.ToString(), "Suite Execution Results"));
+            _suiteResults = new SuiteResults(_properties.GetString(ReporterHelperProperties.SuiteTitle.ToString(), "Suite Execution Results"));
 
         }
 
@@ -130,7 +130,7 @@ namespace NUnitReporter.Reporting.Helpers
 
         public void TestLogFinish()
         {
-            _currentTestResults.Name = _properties.GetString(ReporterHelperProperties.TestName.ToString(), "Automated Test Case");
+            _currentTestResults.Name = _properties.GetString(ReporterHelperProperties.TestTitle.ToString(), "Automated Test Case");
             _currentTestResults.Status = _properties.GetString(ReporterHelperProperties.TestStatus.ToString(), TestStatus.Passed.ToString());
             _currentTestResults.Duration = Convert.ToInt32(_properties.GetString(ReporterHelperProperties.TestDuration.ToString(), "0"));
             _suiteResults.AddResult(_currentTestResults);
@@ -144,7 +144,7 @@ namespace NUnitReporter.Reporting.Helpers
             // Restore reporter state
             _log.Clear();
             _testWriter = null;
-            _properties.Remove(ReporterHelperProperties.TestName.ToString());
+            _properties.Remove(ReporterHelperProperties.TestTitle.ToString());
             _properties.Remove(ReporterHelperProperties.TestStatus.ToString());
             _properties.Remove(ReporterHelperProperties.TestDuration.ToString());
         }

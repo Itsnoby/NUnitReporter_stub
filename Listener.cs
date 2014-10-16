@@ -3,10 +3,12 @@
 using System;
 using System.Globalization;
 using System.IO;
+using System.Text;
 using NUnit.Core;
 using NUnit.Core.Extensibility;
 using NUnit.Framework;
 using NUnitReporter.Reporting;
+using NUnitReporter.Reporting.Description;
 using NUnitReporter.Reporting.Helpers;
 
 #endregion
@@ -38,9 +40,6 @@ namespace NUnitReporter
                 Reporter.AddReporter(new HtmlReporterHelper());
 
                 Reporter.SetProperty(ReporterHelperProperties.WorkingDirectory, Path.Combine(Path.Combine(Utilities.GetAssemblyDirectory(), ".reports"), "html"));
-                Reporter.SetProperty(ReporterHelperProperties.SuiteName, "Suite Execution Results"); // TODO need somehow get suite name
-
-                Reporter.InitSuiteReporting();
             }
             catch (Exception e)
             {
@@ -81,7 +80,7 @@ namespace NUnitReporter
         {
             try
             {
-                Reporter.SetProperty(ReporterHelperProperties.TestName,
+                Reporter.SetProperty(ReporterHelperProperties.TestTitle,
                     string.IsNullOrEmpty(result.Description) ? result.Name : result.Description);
                 Reporter.SetProperty(ReporterHelperProperties.TestDuration,
                     Math.Round(result.Time).ToString(CultureInfo.InvariantCulture));
@@ -122,7 +121,30 @@ namespace NUnitReporter
 
         public void SuiteStarted(TestName testName)
         {
-            Reporter.SetProperty(ReporterHelperProperties.TestSuiteName, testName.Name);
+            try
+            {
+                // set test case class name
+                Reporter.SetProperty(ReporterHelperProperties.TestSuiteName, testName.Name);
+
+                // get suite description attribute
+                var descriptionDetails =(DescriptionDetailsAttribute[]) Utilities.ExtractAttribute<DescriptionDetailsAttribute>(testName.FullName);
+                if (descriptionDetails != null && descriptionDetails.Length > 0)
+                {
+                    var fullDescription = new StringBuilder();
+                    foreach (var description in descriptionDetails)
+                    {
+                        fullDescription.Append(description.Description);
+                    }
+                    Reporter.SetProperty(ReporterHelperProperties.SuiteTitle, fullDescription.ToString());
+                }
+
+                // and initialize suite reporting
+                Reporter.InitSuiteReporting();
+            }
+            catch (Exception e)
+            {
+                WarnAboutException(e);
+            }
         }
 
         public void SuiteFinished(TestResult result)
