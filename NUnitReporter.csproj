@@ -85,7 +85,8 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <PropertyGroup>
-    <PostBuildEvent>COPY /Y "$(TargetPath)" "C:\Program Files (x86)\NUnit 2.6.3\bin\addins"</PostBuildEvent>
+    <PostBuildEvent>COPY /Y "$(TargetPath)" "C:\Program Files (x86)\NUnit 2.6.3\bin\addins"
+COPY /Y "$(TargetDir)\NVelocity.dll" "C:\Program Files (x86)\NUnit 2.6.3\bin\addins"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
