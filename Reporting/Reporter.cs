@@ -36,7 +36,15 @@ namespace NUnitReporter.Reporting
 
             foreach (var reporterHelper in _reporters)
             {
-                reporterHelper.SuiteLogInit();
+                try
+                {
+                    reporterHelper.SuiteLogInit();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("An exception occurred during suite log initialization! ({0})", reporterHelper.GetType().FullName);
+                    Console.WriteLine(e.StackTrace);
+                }
             }
 
             _suiteReportingInitializedBefore = true;
@@ -54,7 +62,15 @@ namespace NUnitReporter.Reporting
 
             foreach (var reporterHelper in _reporters)
             {
-                reporterHelper.SuiteLogFinish();
+                try
+                {
+                    reporterHelper.SuiteLogFinish();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("An exception occurred during suite log finalization! ({0})", reporterHelper.GetType().FullName);
+                    Console.WriteLine(e.StackTrace);
+                }
             }
 
             _suiteReportingInitializedBefore = false;
@@ -72,7 +88,15 @@ namespace NUnitReporter.Reporting
 
             foreach (var reporterHelper in _reporters)
             {
-                reporterHelper.TestLogInit();
+                try
+                {
+                    reporterHelper.TestLogInit();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("An exception occurred during tests log initialization! ({0})", reporterHelper.GetType().FullName);
+                    Console.WriteLine(e.StackTrace);
+                }
             }
 
             _testReportingInitializedBefore = true;
@@ -90,7 +114,15 @@ namespace NUnitReporter.Reporting
 
             foreach (var reporterHelper in _reporters)
             {
-                reporterHelper.TestLogFinish();
+                try
+                {
+                    reporterHelper.TestLogFinish();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("An exception occurred during tests log finalization! ({0})", reporterHelper.GetType().FullName);
+                    Console.WriteLine(e.StackTrace);
+                }
             }
 
             _testReportingInitializedBefore = false;
@@ -106,7 +138,16 @@ namespace NUnitReporter.Reporting
         {
             foreach (var reporterHelper in _reporters)
             {
-                reporterHelper.AddProperty(name, value);
+                try
+                {
+                    reporterHelper.AddProperty(name, value);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("An exception occurred during adding property [{1};{2}]! ({0})",
+                        reporterHelper.GetType().FullName, name, value);
+                    Console.WriteLine(e.StackTrace);
+                }
             }
         }
 
@@ -120,10 +161,18 @@ namespace NUnitReporter.Reporting
         {
             foreach (var helper in _reporters.OfType<ISeleniumReporter>())
             {
-                if (driver == null && helper.WebDriver != null)
-                    helper.WebDriver.Quit();
+                try
+                {
+                    if (driver == null && helper.WebDriver != null)
+                        helper.WebDriver.Quit();
 
-                helper.WebDriver = driver;
+                    helper.WebDriver = driver;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("An exception occurred during setting WebDriver! ({0})", helper.GetType().FullName);
+                    Console.WriteLine(e.StackTrace);
+                }
             }
 
         }
@@ -136,7 +185,15 @@ namespace NUnitReporter.Reporting
         {
             foreach (var reporterHelper in _reporters)
             {
-                reporterHelper.Log(message);
+                try
+                {
+                    reporterHelper.Log(message);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("An exception occurred during logging! ({0})", reporterHelper.GetType().FullName);
+                    Console.WriteLine(e.StackTrace);
+                }
             }
         }
 
@@ -149,7 +206,15 @@ namespace NUnitReporter.Reporting
         {
             foreach (var reporterHelper in _reporters)
             {
-                reporterHelper.Log(type, message);
+                try
+                {
+                    reporterHelper.Log(type, message);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("An exception occurred during logging! ({0})", reporterHelper.GetType().FullName);
+                    Console.WriteLine(e.StackTrace);
+                }
             }
         }
 
@@ -162,7 +227,15 @@ namespace NUnitReporter.Reporting
         {
             foreach (var reporterHelper in _reporters.OfType<IReporterHelperExtended>())
             {
-                reporterHelper.Log(type, message);
+                try
+                {
+                    reporterHelper.Log(type, message);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("An exception occurred during logging! ({0})", reporterHelper.GetType().FullName);
+                    Console.WriteLine(e.StackTrace);
+                }
             }
         }
 
