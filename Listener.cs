@@ -139,10 +139,6 @@ namespace NUnitReporter
             {
                 WarnAboutException(e);
             }
-            finally
-            {
-                Reporter.SetSeleniumDriver(null);
-            }
         }
 
         public void SuiteStarted(TestName testName)

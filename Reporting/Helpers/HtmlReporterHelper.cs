@@ -2,15 +2,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Commons.Collections;
 using NUnit.Framework;
+using NUnitReporter.Reporting.Helpers.Ext;
 using NVelocity;
 using NVelocity.App;
-using OpenQA.Selenium;
-using OpenQA.Selenium.Remote;
 
 #endregion
 
@@ -19,7 +18,7 @@ namespace NUnitReporter.Reporting.Helpers
     /// <summary>
     /// A helper for reports generation in HTML format.
     /// </summary>
-    public class HtmlReporterHelper : IReporterHelperExtended, ISeleniumReporter
+    public class HtmlReporterHelper : IReporterHelperExtended
     {
         private VelocityContext _testContext, _suiteContext;
         private ExtendedProperties _properties;
@@ -29,8 +28,6 @@ namespace NUnitReporter.Reporting.Helpers
 
         private SuiteResults _suiteResults;
         private TestResults _currentTestResults;
-
-        public RemoteWebDriver WebDriver { get; set; }
 
         #region Directories
         private const string TestsResultsDir = "tests";
@@ -104,15 +101,19 @@ namespace NUnitReporter.Reporting.Helpers
             }
         }
 
+        #region Logging
         public void Log(MessageTypes type, string message)
         {
             _log.Add(new HtmlReporterHelperMessage(type, message.Replace(Environment.NewLine, "<br>")));
             if (type.Equals(MessageTypes.Failed))
             {
-                var image = MakeDriverScreenshot(GetResFilesPath());
-                if (image != null)
-                    Log(InternalMessageTypes.Image, string.Format("{0}/{1}", ResDir, image));
-            }                
+                foreach (var reporterHelperExtension in Reporter.ReporterHelperExtensions.OfType<IScreenCaptureHelperExtension>())
+                {
+                    var image = reporterHelperExtension.MakeScreenshot(GetResFilesPath());
+                    if (image != null)
+                        Log(InternalMessageTypes.Image, string.Format("{0}/{1}", ResDir, image));
+                }
+            }
         }
 
         public void Log(InternalMessageTypes type, string message)
@@ -125,10 +126,17 @@ namespace NUnitReporter.Reporting.Helpers
             Log(MessageTypes.Standard, message);
         }
 
+        public void Log(Exception e)
+        {
+            Log(MessageTypes.Failed, e.Message);
+            Log(InternalMessageTypes.StackTrace, e.StackTrace);
+        }
+
         public void ClearLog()
         {
             _log.Clear();
-        }
+        } 
+        #endregion
 
         public void TestLogFinish()
         {
@@ -161,17 +169,6 @@ namespace NUnitReporter.Reporting.Helpers
 
             _suiteWriter = null;
             _suiteResults = null;
-        }
-
-        private string MakeDriverScreenshot(string imagePath)
-        {
-            if (WebDriver == null)
-                return null;
-
-            var screenshot = (WebDriver as ITakesScreenshot).GetScreenshot();
-            var imageName = string.Format("screenshot{0}.png", Environment.TickCount);
-            screenshot.SaveAsFile(Path.Combine(imagePath, imageName), ImageFormat.Png);
-            return imageName;
         }
 
         private void MergeTemplate(TextWriter writer, byte[] templateResource, VelocityContext context)

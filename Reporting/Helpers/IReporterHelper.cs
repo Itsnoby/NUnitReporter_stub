@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 
@@ -15,6 +16,8 @@ namespace NUnitReporter.Reporting.Helpers
         void Log(MessageTypes type, string message);
 
         void Log(string message);
+
+        void Log(Exception e);
 
         void ClearLog();
 

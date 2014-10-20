@@ -58,6 +58,11 @@ namespace NUnitReporter.Reporting.Helpers
             Log(MessageTypes.Standard, message);
         }
 
+        public void Log(Exception e)
+        {
+            Log(MessageTypes.Failed, e.Message);
+        }
+
         public void ClearLog() { }
 
         public void TestLogFinish() { }

@@ -32,6 +32,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="nunit.core.interfaces">
       <HintPath>packages\NUnitTestAdapter.1.2\lib\nunit.core.interfaces.dll</HintPath>
@@ -48,10 +51,6 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
-    <Reference Include="WebDriver, Version=2.43.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\Selenium.WebDriver.2.43.1\lib\net35\WebDriver.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Listener.cs" />
@@ -63,11 +62,13 @@
     </Compile>
     <Compile Include="Reporting\Description\DescriptionDetailsAttribute.cs" />
     <Compile Include="Reporting\Helpers\ConsoleReporterHelper.cs" />
+    <Compile Include="Reporting\Helpers\Ext\IReporterHelperExtension.cs" />
+    <Compile Include="Reporting\Helpers\Ext\IScreenCaptureHelperExtension.cs" />
     <Compile Include="Reporting\Helpers\HtmlReporterHelper.cs" />
-    <Compile Include="Reporting\Helpers\ISeleniumReporter.cs" />
     <Compile Include="Reporting\Helpers\IReporterHelper.cs" />
     <Compile Include="Reporting\Helpers\IReporterHelperExtended.cs" />
     <Compile Include="Reporting\MessageTypes.cs" />
+    <Compile Include="Reporting\NUnitReporterInternalAccess.cs" />
     <Compile Include="Reporting\Reporter.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>

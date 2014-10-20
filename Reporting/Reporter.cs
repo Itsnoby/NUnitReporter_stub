@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using NUnitReporter.Reporting.Helpers;
-using OpenQA.Selenium.Remote;
+using NUnitReporter.Reporting.Helpers.Ext;
 
 #endregion
 
@@ -22,7 +22,21 @@ namespace NUnitReporter.Reporting
             get { return _reporters; }
         }
 
+        private static List<IReporterHelperExtension> _extensions = new List<IReporterHelperExtension>();
+        public static List<IReporterHelperExtension> ReporterHelperExtensions
+        {
+            get { return _extensions; }
+        }
+
         private static bool _testReportingInitializedBefore, _suiteReportingInitializedBefore;
+
+
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public static void AddHelperExtension(IReporterHelperExtension extension)
+        {
+            _extensions.Add(extension);
+        }
+
 
         /// <summary>
         /// Notify all connected reporters about suite execution. The method can be used once, the second method call does nothing.
@@ -43,7 +57,7 @@ namespace NUnitReporter.Reporting
                 catch (Exception e)
                 {
                     Console.WriteLine("An exception occurred during suite log initialization! ({0})", reporterHelper.GetType().FullName);
-                    Console.WriteLine(e.StackTrace);
+                    Console.WriteLine(e);
                 }
             }
 
@@ -69,7 +83,7 @@ namespace NUnitReporter.Reporting
                 catch (Exception e)
                 {
                     Console.WriteLine("An exception occurred during suite log finalization! ({0})", reporterHelper.GetType().FullName);
-                    Console.WriteLine(e.StackTrace);
+                    Console.WriteLine(e);
                 }
             }
 
@@ -95,7 +109,7 @@ namespace NUnitReporter.Reporting
                 catch (Exception e)
                 {
                     Console.WriteLine("An exception occurred during tests log initialization! ({0})", reporterHelper.GetType().FullName);
-                    Console.WriteLine(e.StackTrace);
+                    Console.WriteLine(e);
                 }
             }
 
@@ -121,7 +135,7 @@ namespace NUnitReporter.Reporting
                 catch (Exception e)
                 {
                     Console.WriteLine("An exception occurred during tests log finalization! ({0})", reporterHelper.GetType().FullName);
-                    Console.WriteLine(e.StackTrace);
+                    Console.WriteLine(e);
                 }
             }
 
@@ -146,35 +160,9 @@ namespace NUnitReporter.Reporting
                 {
                     Console.WriteLine("An exception occurred during adding property [{1};{2}]! ({0})",
                         reporterHelper.GetType().FullName, name, value);
-                    Console.WriteLine(e.StackTrace);
+                    Console.WriteLine(e);
                 }
             }
-        }
-
-        /// <summary>
-        /// Pass WebDriver object for connected reporters who can use it to make screen captures.
-        /// Quits WebDriver if passed driver object is <c>null</c>.
-        /// </summary>
-        /// <param name="driver">Active Selenium WebDriver instance. The driver object shout has 'takes screenshot' capabilities enabled.</param>
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public static void SetSeleniumDriver(RemoteWebDriver driver)
-        {
-            foreach (var helper in _reporters.OfType<ISeleniumReporter>())
-            {
-                try
-                {
-                    if (driver == null && helper.WebDriver != null)
-                        helper.WebDriver.Quit();
-
-                    helper.WebDriver = driver;
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("An exception occurred during setting WebDriver! ({0})", helper.GetType().FullName);
-                    Console.WriteLine(e.StackTrace);
-                }
-            }
-
         }
 
         /// <summary>
@@ -192,7 +180,7 @@ namespace NUnitReporter.Reporting
                 catch (Exception e)
                 {
                     Console.WriteLine("An exception occurred during logging! ({0})", reporterHelper.GetType().FullName);
-                    Console.WriteLine(e.StackTrace);
+                    Console.WriteLine(e);
                 }
             }
         }
@@ -213,7 +201,7 @@ namespace NUnitReporter.Reporting
                 catch (Exception e)
                 {
                     Console.WriteLine("An exception occurred during logging! ({0})", reporterHelper.GetType().FullName);
-                    Console.WriteLine(e.StackTrace);
+                    Console.WriteLine(e);
                 }
             }
         }
@@ -234,19 +222,42 @@ namespace NUnitReporter.Reporting
                 catch (Exception e)
                 {
                     Console.WriteLine("An exception occurred during logging! ({0})", reporterHelper.GetType().FullName);
-                    Console.WriteLine(e.StackTrace);
+                    Console.WriteLine(e);
+                }
+            }
+        }
+
+        public static void Log(Exception e)
+        {
+            foreach (var reporterHelper in _reporters)
+            {
+                try
+                {
+                    reporterHelper.Log(e);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("An exception occurred during logging! ({0})", reporterHelper.GetType().FullName);
+                    Console.WriteLine(ex);
                 }
             }
         }
 
         /// <summary>
         /// Connect <see cref="IReporterHelper"/> to reporting. Usage of the <see cref="Reporter.InitTestReporting"/> method after adding the helper is mandatory.
+        /// Adds only the one reporter helper of the same type.
         /// </summary>
         /// <param name="reporterHelper">New helper.</param>
         [MethodImpl(MethodImplOptions.Synchronized)]
         public static void AddReporter(IReporterHelper reporterHelper)
         {
-            _reporters.Add(reporterHelper);
+            var reporterPresent = false;
+            foreach (var reporter in _reporters.Where(reporter => reporter.GetType() == reporterHelper.GetType()))
+            {
+                reporterPresent = true;
+            }
+            if (!reporterPresent)
+                _reporters.Add(reporterHelper);
         }
 
         /// <summary>
