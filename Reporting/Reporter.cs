@@ -43,7 +43,7 @@ namespace NUnitReporter.Reporting
         /// To notify reporter helpers again <see cref="Reporter.FinishSuiteReporting"/> method should be executed before.
         /// </summary>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public static void InitSuiteReporting()
+        internal static void InitSuiteReporting()
         {
             if (_suiteReportingInitializedBefore)
                 return;
@@ -69,7 +69,7 @@ namespace NUnitReporter.Reporting
         /// To notify reporter helpers again <see cref="Reporter.InitSuiteReporting"/> method should be executed before.
         /// </summary>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public static void FinishSuiteReporting()
+        internal static void FinishSuiteReporting()
         {
             if (!_suiteReportingInitializedBefore)
                 return;
