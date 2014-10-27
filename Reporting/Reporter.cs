@@ -30,11 +30,21 @@ namespace NUnitReporter.Reporting
 
         private static bool _testReportingInitializedBefore, _suiteReportingInitializedBefore;
 
-
+        /// <summary>
+        /// Connect <see cref="IReporterHelperExtension"/> to reporting.
+        /// Adds only the one helper extension of the same type.
+        /// </summary>
+        /// <param name="extension">New helper extension.</param>
         [MethodImpl(MethodImplOptions.Synchronized)]
         public static void AddHelperExtension(IReporterHelperExtension extension)
         {
-            _extensions.Add(extension);
+            var extensionPresent = false;
+            foreach (var ext in _extensions.Where(reporter => reporter.GetType() == extension.GetType()))
+            {
+                extensionPresent = true;
+            }
+            if (!extensionPresent)
+                _extensions.Add(extension);
         }
 
 
