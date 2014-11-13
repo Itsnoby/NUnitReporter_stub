@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Web;
 using Commons.Collections;
 using NUnit.Framework;
 using NUnitReporter.Reporting.Helpers.Ext;
@@ -104,7 +105,8 @@ namespace NUnitReporter.Reporting.Helpers
         #region Logging
         public void Log(MessageTypes type, string message)
         {
-            _log.Add(new HtmlReporterHelperMessage(type, message.Replace(Environment.NewLine, "<br>")));
+//            _log.Add(new HtmlReporterHelperMessage(type, message.Replace(Environment.NewLine, "<br>"))); // TODO remove
+            _log.Add(new HtmlReporterHelperMessage(type, HttpUtility.HtmlEncode(message))); 
             if (type.Equals(MessageTypes.Failed))
             {
                 foreach (var reporterHelperExtension in Reporter.ReporterHelperExtensions.OfType<IScreenCaptureHelperExtension>())
