@@ -66,6 +66,7 @@ namespace NUnitReporter
 
         public void TestStarted(TestName testName)
         {
+            Console.WriteLine("Test started for " + testName.FullName);
             try
             {
                 Reporter.InitTestReporting();
@@ -77,7 +78,8 @@ namespace NUnitReporter
         }
 
         public void TestFinished(TestResult result)
-        {
+        {         
+            Console.WriteLine("Test finished for " + result.Test.ClassName);
             try
             {
                 #region Get test description

@@ -16,6 +16,8 @@ namespace NUnitReporter.Reporting
     /// </summary>
     public static class Reporter
     {
+        private static long _id = Environment.TickCount;
+
         private static List<IReporterHelper> _reporters = new List<IReporterHelper>();
         public static List<IReporterHelper> Reporters
         {

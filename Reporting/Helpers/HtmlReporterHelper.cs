@@ -105,7 +105,6 @@ namespace NUnitReporter.Reporting.Helpers
         #region Logging
         public void Log(MessageTypes type, string message)
         {
-//            _log.Add(new HtmlReporterHelperMessage(type, message.Replace(Environment.NewLine, "<br>"))); // TODO remove
             _log.Add(new HtmlReporterHelperMessage(type, HttpUtility.HtmlEncode(message))); 
             if (type.Equals(MessageTypes.Failed))
             {
@@ -203,6 +202,7 @@ namespace NUnitReporter.Reporting.Helpers
         }
     }
 
+    [Serializable]
     public class TestResults
     {
         public string Name { get; set; }
@@ -217,6 +217,7 @@ namespace NUnitReporter.Reporting.Helpers
         }
     }
 
+    [Serializable]
     public class SuiteResults
     {
         public string Name { get; private set; }
