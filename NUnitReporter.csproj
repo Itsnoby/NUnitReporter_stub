@@ -31,11 +31,20 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>false</SignAssembly>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>KeyPair.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="nunit.core">
+      <HintPath>packages\NUnitTestAdapter.1.2\lib\nunit.core.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="nunit.core.interfaces">
       <HintPath>packages\NUnitTestAdapter.1.2\lib\nunit.core.interfaces.dll</HintPath>
       <Private>False</Private>
@@ -49,11 +58,11 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Listener.cs" />
+    <Compile Include="CustomEventListener.cs" />
+    <Compile Include="CustomDecorator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -71,10 +80,14 @@
     <Compile Include="Reporting\MessageTypes.cs" />
     <Compile Include="Reporting\NUnitReporterInternalAccess.cs" />
     <Compile Include="Reporting\Reporter.cs" />
+    <Compile Include="TestMethodWrapper.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="KeyPair.snk" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Reporting\Templates\suite_result.html.vm" />
     <None Include="Reporting\Templates\test_result.html.vm" />
   </ItemGroup>
@@ -89,7 +102,10 @@
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <PropertyGroup>
     <PostBuildEvent>COPY /Y "$(TargetPath)" "C:\Program Files (x86)\NUnit 2.6.3\bin\addins"
-COPY /Y "$(TargetDir)\NVelocity.dll" "C:\Program Files (x86)\NUnit 2.6.3\bin\addins"</PostBuildEvent>
+COPY /Y "$(TargetDir)\NVelocity.dll" "C:\Program Files (x86)\NUnit 2.6.3\bin\addins"
+COPY /Y "$(TargetPath)" "%25USERPROFILE%25\AppData\Local\JetBrains\Installations\ReSharperPlatformVs12\addins"
+COPY /Y "$(TargetDir)\NVelocity.dll" "%25USERPROFILE%25\AppData\Local\JetBrains\Installations\ReSharperPlatformVs12\addins"
+</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
