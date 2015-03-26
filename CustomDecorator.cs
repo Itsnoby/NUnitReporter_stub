@@ -24,13 +24,13 @@ namespace NUnitReporter
         public bool Install(IExtensionHost host)
         {
             IExtensionPoint listeners = host.GetExtensionPoint("EventListeners");
-            if (listeners == null)
+            if (listeners == null) 
                 return false;
-
+            
             listeners.Install(this);
             return true;
         }
-
+     
         #region EventListener Members
         public void RunStarted(string name, int testCount)
         {
@@ -57,7 +57,7 @@ namespace NUnitReporter
             catch (Exception e)
             {
                 WarnAboutException(e);
-            } 
+            }
         }
 
         public void RunFinished(Exception exception)
@@ -78,7 +78,7 @@ namespace NUnitReporter
         }
 
         public void TestFinished(TestResult result)
-        {         
+        {
             Console.WriteLine("Test finished for " + result.Test.ClassName);
             try
             {
@@ -102,7 +102,7 @@ namespace NUnitReporter
                 }
 
                 Reporter.SetProperty(ReporterHelperProperties.TestTitle,
-                    string.IsNullOrEmpty(testDescription.ToString()) ? result.Name : testDescription.ToString()); 
+                    string.IsNullOrEmpty(testDescription.ToString()) ? result.Name : testDescription.ToString());
 
                 #endregion
 
@@ -154,7 +154,7 @@ namespace NUnitReporter
                 }
 
                 // get suite description attribute
-                var descriptionDetails =(DescriptionDetailsAttribute[]) Utilities.ExtractAttribute<DescriptionDetailsAttribute>(testName.FullName);
+                var descriptionDetails = (DescriptionDetailsAttribute[])Utilities.ExtractAttribute<DescriptionDetailsAttribute>(testName.FullName);
                 if (descriptionDetails != null && descriptionDetails.Length > 0)
                 {
                     var fullDescription = new StringBuilder();
@@ -179,15 +179,15 @@ namespace NUnitReporter
 
         public void UnhandledException(Exception exception)
         {
-
+            
         }
 
-        public void TestOutput(TestOutput testOutput) 
-        { 
+        public void TestOutput(TestOutput testOutput)
+        {
             // DO NOT produce any console outputs here! 
-        } 
+        }
         #endregion
-
+        
         private static void WarnAboutException(Exception e)
         {
             Console.WriteLine(e);

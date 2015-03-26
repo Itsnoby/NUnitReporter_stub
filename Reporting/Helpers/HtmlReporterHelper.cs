@@ -6,11 +6,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
-using Commons.Collections;
 using NUnit.Framework;
+using NUnitReporter.Reporting.Generators;
 using NUnitReporter.Reporting.Helpers.Ext;
-using NVelocity;
-using NVelocity.App;
 
 #endregion
 
@@ -21,9 +19,10 @@ namespace NUnitReporter.Reporting.Helpers
     /// </summary>
     public class HtmlReporterHelper : IReporterHelperExtended
     {
-        private VelocityContext _testContext, _suiteContext;
+        private TestResultGenerator _testResultGenerator;
+        private SuiteResultGenerator _suiteContext;
         private ExtendedProperties _properties;
-        private TextWriter _testWriter, _suiteWriter;
+        private TextWriter _testWriter;
 
         private List<HtmlReporterHelperMessage> _log;
 
@@ -66,27 +65,23 @@ namespace NUnitReporter.Reporting.Helpers
             _log = new List<HtmlReporterHelperMessage>();
         }
 
-
         public void SuiteLogInit()
         {
-            _suiteContext = new VelocityContext();
+            _suiteContext = new SuiteResultGenerator();
             _suiteResults = new SuiteResults(_properties.GetString(ReporterHelperProperties.SuiteTitle.ToString(), "Suite Execution Results"));
 
         }
 
         public void TestLogInit()
         {
-            _testContext = new VelocityContext();
-
+            _testResultGenerator = new TestResultGenerator();
             var filename = string.Format("{0}_{1:dd-MMMM-yyyy_HH-mm-ss-fff}.html",
                 _properties.GetString(ReporterHelperProperties.TestClassName.ToString(), "TestResult"), DateTime.Now);
             var filePath = Path.Combine(GetTestsFilesPath(), filename);
 
             _currentTestResults = new TestResults(string.Format("{0}/{1}", TestsResultsDir, filename));
-
             _testWriter = new StreamWriter(filePath, false, new UnicodeEncoding());
 
-            Velocity.Init();
         }
 
         public void AddProperty(ReporterHelperProperties name, string value)
@@ -145,12 +140,13 @@ namespace NUnitReporter.Reporting.Helpers
             _currentTestResults.Status = _properties.GetString(ReporterHelperProperties.TestStatus.ToString(), TestStatus.Passed.ToString());
             _currentTestResults.Duration = Convert.ToInt32(_properties.GetString(ReporterHelperProperties.TestDuration.ToString(), "0"));
             _suiteResults.AddResult(_currentTestResults);
-
-            _testContext.Put("log", _log);
-            _testContext.Put("name", _currentTestResults.Name);
-            _testContext.Put("status", _currentTestResults.Status);
-            _testContext.Put("duration", _currentTestResults.Duration);
-            MergeTemplate(_testWriter, Properties.Resources.test_result_html, _testContext);
+            _testResultGenerator.Log = _log;
+            _testResultGenerator.Name = _currentTestResults.Name;
+            _testResultGenerator.Status = _currentTestResults.Status;
+            _testResultGenerator.Duration = _currentTestResults.Duration;
+            _testResultGenerator.CreateReport();
+            _testWriter.Write(_testResultGenerator.Report);
+            _testWriter.Dispose();
 
             // Restore reporter state
             _log.Clear();
@@ -163,21 +159,13 @@ namespace NUnitReporter.Reporting.Helpers
         public void SuiteLogFinish()
         {
             var filename = string.Format("SuiteResults_{0:dd-MMMM-yyyy_HH-mm-ss-fff}.html",DateTime.Now);
-            _suiteWriter = new StreamWriter(Path.Combine(GetWorkPath(), filename), false, new UnicodeEncoding());
-
-            _suiteContext.Put("results", _suiteResults);
-            MergeTemplate(_suiteWriter, Properties.Resources.suite_result_html, _suiteContext);
-
-            _suiteWriter = null;
+            _suiteContext.SuiteResults = _suiteResults;
+            _suiteContext.CreateReport();
+            using (var suiteWriter = new StreamWriter(Path.Combine(GetWorkPath(), filename), false, new UnicodeEncoding()))
+            {
+                suiteWriter.Write(_suiteContext.Report);
+            }
             _suiteResults = null;
-        }
-
-        private void MergeTemplate(TextWriter writer, byte[] templateResource, VelocityContext context)
-        {
-            if (writer == null) return;
-            var template = Encoding.UTF8.GetString(templateResource);
-            Velocity.Evaluate(context, writer, "htmlTemplate", template);
-            writer.Dispose();
         }
     }
 
