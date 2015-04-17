@@ -1,6 +1,8 @@
 ﻿#region Usages
 
 using System;
+using System.Diagnostics;
+using System.IO;
 using System.Text;
 
 #endregion
@@ -12,9 +14,20 @@ namespace NUnitReporter.Reporting.Helpers
     /// </summary>
     public class ConsoleReporterHelper : IReporterHelper
     {
-        public void SuiteLogInit(){ }
+        private const string LogName = "tests-log.txt";
+        private string _workingDirectory = Utilities.GetAssemblyDirectory();
+        private StreamWriter _log;
 
-        public void TestLogInit() { }
+        public void SuiteLogInit() { }
+
+        public void TestLogInit()
+        {
+            if (_log != null) return;
+
+            if (!Directory.Exists(_workingDirectory))
+                Directory.CreateDirectory(_workingDirectory);
+            _log = new StreamWriter(Path.Combine(_workingDirectory, LogName));
+        }
 
         public void AddProperty(ReporterHelperProperties name, string value)
         {
@@ -25,6 +38,9 @@ namespace NUnitReporter.Reporting.Helpers
                     break;
                 case ReporterHelperProperties.TestDuration:
                     Log(string.Format("[*****] Test executed in {0} seconds.", value));
+                    break;
+                case ReporterHelperProperties.WorkingDirectory:
+                    _workingDirectory = string.IsNullOrEmpty(value) ? Utilities.GetAssemblyDirectory() : value;
                     break;
             }
         }
@@ -49,7 +65,10 @@ namespace NUnitReporter.Reporting.Helpers
             }
             msg.Append(message);
 
-            Console.WriteLine(msg);
+            Debug.WriteLine(msg);
+            if (_log != null)
+                _log.WriteLine(msg);
+
             Console.ForegroundColor = ConsoleColor.White;
         }
 
@@ -63,9 +82,22 @@ namespace NUnitReporter.Reporting.Helpers
             Log(MessageTypes.Failed, e.Message);
         }
 
-        public void ClearLog() { }
+        public void ClearLog()
+        {
+            try
+            {
+                _log.Close();
+                File.Delete(Path.Combine(_workingDirectory, LogName));
+            }
+            catch { }
+        }
 
         public void TestLogFinish() { }
-        public void SuiteLogFinish() { }
+
+        public void SuiteLogFinish()
+        {
+            _log.Close();
+            _log = null;
+        }
     }
 }

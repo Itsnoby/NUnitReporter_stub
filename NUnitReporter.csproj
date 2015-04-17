@@ -57,7 +57,7 @@
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CustomDecorator.cs" />
+    <Compile Include="Listener.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reporting\Description\DescriptionDetailsAttribute.cs" />
     <Compile Include="Reporting\Helpers\ConsoleReporterHelper.cs" />
